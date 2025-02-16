@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
-    "applications",  # Ensure this is here
+    "applications",  
+    'rest_framework_simplejwt',
 ]
 
 
@@ -90,6 +91,12 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "3306",
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 # Password validation
