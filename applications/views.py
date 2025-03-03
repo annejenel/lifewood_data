@@ -85,3 +85,31 @@ class ApplicationListView(ListAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
+
+
+
+
+
+class UpdateApplicationStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        try:
+            application = Application.objects.get(pk=pk)
+            new_status = request.data.get("status", "").strip().lower()
+
+            if new_status not in ["approved", "declined"]:
+                return Response(
+                    {"error": "Invalid status. Must be 'approved' or 'declined'."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            application.status = new_status
+            application.save()
+
+            return Response(
+                {"message": f"Application status updated to {new_status}", "status": new_status},
+                status=status.HTTP_200_OK
+            )
+        except Application.DoesNotExist:
+            return Response({"error": "Application not found"}, status=status.HTTP_404_NOT_FOUND)

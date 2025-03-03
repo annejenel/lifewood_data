@@ -1,15 +1,22 @@
 from django.db import models
 
 class Application(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("declined", "Declined"),
+    ]
     full_name = models.CharField(max_length=255)
     age = models.IntegerField()
     degree = models.CharField(max_length=255)
     job_experience = models.TextField()
     contact_time = models.TimeField()
     resume = models.FileField(upload_to="resumes/")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
 
     def __str__(self):
-        return self.full_name
+        return f"{self.full_name} - {self.status}"
+
 
 
 class ContactMessage(models.Model):
