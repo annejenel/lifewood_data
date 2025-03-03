@@ -12,6 +12,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+from .models import Application, ContactMessage
+from datetime import timedelta, date
 
 
 class ApplicationCreateView(APIView):
@@ -113,3 +116,27 @@ class UpdateApplicationStatusView(APIView):
             )
         except Application.DoesNotExist:
             return Response({"error": "Application not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+def admin_overview(request):
+    total_applications = Application.objects.count()
+    pending_applications = Application.objects.filter(status="pending").count()
+    approved_applications = Application.objects.filter(status="approved").count()
+    declined_applications = Application.objects.filter(status="declined").count()
+    contact_messages = ContactMessage.objects.count()
+
+    # Application trends over the last 7 days
+    application_trend = []
+    for i in range(7):
+        day = date.today() - timedelta(days=i)
+        count = Application.objects.filter(created_at__date=day).count()
+        application_trend.append({"date": day.strftime("%Y-%m-%d"), "count": count})
+
+    return JsonResponse({
+        "totalApplications": total_applications,
+        "pendingApplications": pending_applications,
+        "approvedApplications": approved_applications,
+        "declinedApplications": declined_applications,
+        "contactMessages": contact_messages,
+        "applicationTrend": application_trend
+    })

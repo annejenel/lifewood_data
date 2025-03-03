@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.timezone import now
+
 
 class Application(models.Model):
     STATUS_CHOICES = [
@@ -6,6 +8,7 @@ class Application(models.Model):
         ("approved", "Approved"),
         ("declined", "Declined"),
     ]
+
     full_name = models.CharField(max_length=255)
     age = models.IntegerField()
     degree = models.CharField(max_length=255)
@@ -13,6 +16,7 @@ class Application(models.Model):
     contact_time = models.TimeField()
     resume = models.FileField(upload_to="resumes/")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(default=now)  # ✅ Provide a default value
 
     def __str__(self):
         return f"{self.full_name} - {self.status}"
